@@ -1,3 +1,13 @@
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
+from past.utils import old_div
+from builtins import object
 # -*- coding: utf-8 -*-
 # See LICENSE.txt for licensing terms
 
@@ -20,7 +30,7 @@ try:
     from rst2pdf.opt_imports import LazyImports
 except ImportError:
     # This is just to make nosetest happy on the CI server
-    class Flowable:
+    class Flowable(object):
         pass
 
         # TODO:  Looks the same as for other images, because I
@@ -69,7 +79,7 @@ class VectorPdf(Flowable):
         width = width or imageWidth
         height = height or imageHeight
         if kind in ['bound','proportional']:
-            factor = min(float(width)/imageWidth,float(height)/imageHeight)
+            factor = min(old_div(float(width),imageWidth),old_div(float(height),imageHeight))
             width = factor * imageWidth
             height = factor * imageHeight
         self.drawWidth = width
@@ -91,8 +101,8 @@ class VectorPdf(Flowable):
         xobj = self.xobj
         xobj_name = makerl(canv._doc, xobj)
 
-        xscale = (width or self.drawWidth) / xobj.w
-        yscale = (height or self.drawHeight) / xobj.h
+        xscale = old_div((width or self.drawWidth), xobj.w)
+        yscale = old_div((height or self.drawHeight), xobj.h)
         x -= xobj.x * xscale
         y -= xobj.y * yscale
 
@@ -105,7 +115,7 @@ class VectorPdf(Flowable):
     def _restrictSize(self,aW,aH):
         if self.drawWidth>aW+_FUZZ or self.drawHeight>aH+_FUZZ:
             self._oldDrawSize = self.drawWidth, self.drawHeight
-            factor = min(float(aW)/self.drawWidth,float(aH)/self.drawHeight)
+            factor = min(old_div(float(aW),self.drawWidth),old_div(float(aH),self.drawHeight))
             self.drawWidth *= factor
             self.drawHeight *= factor
         return self.drawWidth, self.drawHeight

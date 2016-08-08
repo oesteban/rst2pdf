@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 # See LICENSE.txt for licensing terms
 
-from StringIO import StringIO
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
+from io import StringIO
 
 from docutils import writers
 
@@ -26,7 +34,7 @@ class PdfWriter(writers.Writer):
         sio = StringIO('')
         createpdf.RstToPdf(sphinx=True).createPdf(
             doctree=self.document, output=sio, compressed=False)
-        self.output = unicode(sio.getvalue(), 'utf-8', 'ignore')
+        self.output = str(sio.getvalue(), 'utf-8', 'ignore')
 
     def supports(self, format):
         """This writer supports all format-specific elements."""

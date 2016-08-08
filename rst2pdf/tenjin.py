@@ -39,6 +39,15 @@
 
    See help of tenjin.Template and tenjin.Engine for details.
 """
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
+from builtins import object
 
 __revision__ = "$Rev: 137 $"[6:-2]
 __release__  = "0.6.2"
@@ -107,7 +116,7 @@ def _create_helpers_module():
         """
         if val is None:              return ''
         if isinstance(val, str):     return val
-        if isinstance(val, unicode): return val
+        if isinstance(val, str): return val
         return str(val)
 
     def generate_tostrfunc(encoding):
@@ -124,7 +133,7 @@ def _create_helpers_module():
         def to_str(val):
             if val is None:               return ''
             if isinstance(val, str):      return val
-            if isinstance(val, unicode):  return val.encode(encoding)
+            if isinstance(val, str):  return val.encode(encoding)
             return str(val)
         return to_str
 
@@ -191,7 +200,7 @@ def _create_helpers_module():
         """
         frame = sys._getframe(1)
         context = frame.f_locals
-        if context.has_key(name):
+        if name in context:
             _buf = context['_buf']
             _buf.append(context[name])
             return True
@@ -207,7 +216,7 @@ def _create_helpers_module():
 
     def _decode_params(s):
         """decode <`#...#`> and <`$...$`> into #{...} and ${...}"""
-        from urllib import unquote
+        from urllib.parse import unquote
         dct = { 'lt':'<', 'gt':'>', 'amp':'&', 'quot':'"', '#039':"'", }
         def unescape(s):
             #return s.replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"').replace('&#039;', "'").replace('&amp;',  '&')
@@ -748,7 +757,7 @@ class Template(object):
             locals = context.copy()
         else:
             locals = {}
-            if context.has_key('_engine'):
+            if '_engine' in context:
                 context.get('_engine').hook_context(locals)
         locals['_context'] = context
         if globals is None:
@@ -948,7 +957,7 @@ class Engine(object):
 
     def _store_cachefile_for_script(self, cache_filename, template):
         s = template.script
-        if template.encoding and isinstance(s, unicode):
+        if template.encoding and isinstance(s, str):
             s = s.encode(template.encoding)
             #s = s.encode('utf-8')
         if template.args is not None:
@@ -987,7 +996,7 @@ class Engine(object):
             return open(filename).read()
         if _context is None:
             _context = {}
-        if not _context.has_key('_engine'):
+        if '_engine' not in _context:
             self.hook_context(_context)
         if _globals is None:
             _globals = sys._getframe(2).f_globals
@@ -1027,7 +1036,7 @@ class Engine(object):
         frame = sys._getframe(1)
         locals  = frame.f_locals
         globals = frame.f_globals
-        assert locals.has_key('_context')
+        assert '_context' in locals
         context = locals['_context']
         # context and globals are passed to get_template() only for preprocessing.
         template = self.get_template(template_name, context, globals)

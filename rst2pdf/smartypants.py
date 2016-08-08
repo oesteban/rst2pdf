@@ -371,6 +371,13 @@ smartypants.py license::
 .. _Movable Type: http://www.movabletype.org/
 
 """
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 
 default_smartypants_attr = "1"
 

@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 # See LICENSE.txt for licensing terms
 
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
+from past.utils import old_div
 import os
 
 from reportlab.platypus import Flowable, Paragraph
@@ -39,12 +48,12 @@ class SVGImage(Flowable):
             self._mode = None
             log.error("SVG support not enabled,"
                 " please install svg2rlg.")
-        self.__ratio = float(self.imageWidth)/self.imageHeight
+        self.__ratio = old_div(float(self.imageWidth),self.imageHeight)
         if kind in ['direct','absolute']:
             self.drawWidth = width or self.imageWidth
             self.drawHeight = height or self.imageHeight
         elif kind in ['bound','proportional']:
-            factor = min(float(width)/self.imageWidth,float(height)/self.imageHeight)
+            factor = min(old_div(float(width),self.imageWidth),old_div(float(height),self.imageHeight))
             self.drawWidth = self.imageWidth*factor
             self.drawHeight = self.imageHeight*factor
 
@@ -62,7 +71,7 @@ class SVGImage(Flowable):
                 raise ValueError("Bad hAlign value " + str(a))
         canv.saveState()
         canv.translate(x, y)
-        canv.scale(self.drawWidth/self._w, self.drawHeight/self._h)
+        canv.scale(old_div(self.drawWidth,self._w), old_div(self.drawHeight,self._h))
         self.doc._drawOn(canv)
         canv.restoreState()
 

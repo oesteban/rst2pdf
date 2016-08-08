@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 
 '''A completely generic, data-driven, configuration dialog'''
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import str
+from builtins import *
 
 class ConfigDialog(QtGui.QDialog):
   def __init__(self, parent):
@@ -24,7 +33,7 @@ class ConfigDialog(QtGui.QDialog):
           cb=QtGui.QCheckBox(optionName)
           cb.setChecked(config.getValue(sectionName, optionName, definition[1]))
           layout.addWidget(cb, row, 0, 1, 2)
-          self.values[sectionName+'/'+optionName]=[cb, lambda(cb): cb.isChecked()]
+          self.values[sectionName+'/'+optionName]=[cb, lambda cb: cb.isChecked()]
         elif definition[0]=='int':
           label=QtGui.QLabel(optionName+":")
           label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
@@ -40,26 +49,26 @@ class ConfigDialog(QtGui.QDialog):
           spin.setValue(config.getValue(sectionName, optionName, definition[1]))
           layout.addWidget(label, row, 0, 1, 1)
           layout.addWidget(spin, row, 1, 1, 1)
-          self.values[sectionName+'/'+optionName]=[spin, lambda(spin): spin.value()]
+          self.values[sectionName+'/'+optionName]=[spin, lambda spin: spin.value()]
           
         elif definition[0]=='string':
           label=QtGui.QLabel(optionName+":")
           label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
           text=QtGui.QLineEdit()
-          text.setText(unicode(config.getValue(sectionName, optionName, definition[1])))          
+          text.setText(str(config.getValue(sectionName, optionName, definition[1])))          
           layout.addWidget(label, row, 0, 1, 1)
           layout.addWidget(text, row, 1, 1, 1)
-          self.values[sectionName+'/'+optionName]=[text, lambda(text): unicode(text.text())]
+          self.values[sectionName+'/'+optionName]=[text, lambda text: str(text.text())]
 
         elif definition[0]=='password':
           label=QtGui.QLabel(optionName+":")
           label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
           text=QtGui.QLineEdit()
           text.setEchoMode(QtGui.QLineEdit.Password)
-          text.setText(unicode(config.getValue(sectionName, optionName, definition[1])))          
+          text.setText(str(config.getValue(sectionName, optionName, definition[1])))          
           layout.addWidget(label, row, 0, 1, 1)
           layout.addWidget(text, row, 1, 1, 1)
-          self.values[sectionName+'/'+optionName]=[text, lambda(text): unicode(text.text())]
+          self.values[sectionName+'/'+optionName]=[text, lambda text: str(text.text())]
 
         help=QtGui.QLabel(definition[2])
         help.setWordWrap(True)

@@ -1,3 +1,15 @@
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import map
+from builtins import zip
+from builtins import str
+from builtins import *
+from past.utils import old_div
+from builtins import object
 # -*- coding: utf-8 -*-
 # See LICENSE.txt for licensing terms
 #$URL$
@@ -95,13 +107,13 @@ class StyleSheet(object):
         if font_path is None:
             font_path=[]
         font_path+=['.', os.path.join(self.PATH, 'fonts')]
-        self.FontSearchPath = map(os.path.expanduser, font_path)
+        self.FontSearchPath = list(map(os.path.expanduser, font_path))
 
         if style_path is None:
             style_path=[]
         style_path+=['.', os.path.join(self.PATH, 'styles'),
                       '~/.rst2pdf/styles']
-        self.StyleSearchPath = map(os.path.expanduser, style_path)
+        self.StyleSearchPath = list(map(os.path.expanduser, style_path))
         self.FontSearchPath=list(set(self.FontSearchPath))
         self.StyleSearchPath=list(set(self.StyleSearchPath))
 
@@ -218,7 +230,7 @@ class StyleSheet(object):
             for font in embedded:
                 try:
                     # Just a font name, try to embed it
-                    if isinstance(font, unicode):
+                    if isinstance(font, str):
                         # See if we can find the font
                         fname, pos = findfonts.guessFont(font)
                         if font in embedded_fontnames:
@@ -536,7 +548,7 @@ class StyleSheet(object):
         if not re.match("^[a-z](-?[a-z0-9]+)*$", key):
             key = docutils.nodes.make_id(key)
 
-        if self.StyleSheet.has_key(key):
+        if key in self.StyleSheet:
             return self.StyleSheet[key]
         else:
             if key.startswith('pygments'):
@@ -777,7 +789,7 @@ class StyleSheet(object):
         The styles that are *later* in the list will have priority.
         '''
 
-        validst = [x for x in styles if self.StyleSheet.has_key(x)]
+        validst = [x for x in styles if x in self.StyleSheet]
         newname = '_'.join(['merged']+validst)
         validst = [self[x] for x in validst]
         newst=copy(validst[0])
@@ -846,11 +858,11 @@ def formatColor(value, numeric=True):
         while len(c) < 6:
             c = '0' + c
         if numeric:
-            r = int(c[:2], 16)/255.
-            g = int(c[2:4], 16)/255.
-            b = int(c[4:6], 16)/255.
+            r = old_div(int(c[:2], 16),255.)
+            g = old_div(int(c[2:4], 16),255.)
+            b = old_div(int(c[4:6], 16),255.)
             if len(c) >= 8:
-                alpha = int(c[6:8], 16)/255.
+                alpha = old_div(int(c[6:8], 16),255.)
                 return colors.Color(r, g, b, alpha=alpha)
             return colors.Color(r, g, b)
         else:

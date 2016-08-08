@@ -39,6 +39,13 @@
 #####################################################################################
 
 from __future__ import absolute_import, division, print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import *
+from builtins import object
 
 __docformat__ = 'reStructuredText'
 
@@ -633,7 +640,7 @@ class RstToPdf(object):
 
         def cleantags(s):
             re.sub(r'<[^>]*?>', '',
-                unicode(s).strip())
+                str(s).strip())
 
         pdfdoc = FancyDocTemplate(
             output,
@@ -845,7 +852,7 @@ def setPageCounter(counter=None, style=None):
     elif _counterStyle=='loweralpha':
         ptext=string.lowercase[_counter%26]
     else:
-        ptext=unicode(_counter)
+        ptext=str(_counter)
     return ptext
 
 class MyContainer(_Container, Flowable):
@@ -912,13 +919,13 @@ class HeaderOrFooter(object):
         pnum=setPageCounter()
 
         def replace(text):
-            if not isinstance(text, unicode):
+            if not isinstance(text, str):
                 try:
-                    text = unicode(text, e.encoding)
+                    text = str(text, e.encoding)
                 except AttributeError:
-                    text = unicode(text, 'utf-8')
+                    text = str(text, 'utf-8')
                 except TypeError:
-                    text = unicode(text, 'utf-8')
+                    text = str(text, 'utf-8')
 
             text = text.replace(u'###Page###', pnum)
             if '###Total###' in text:
@@ -1519,7 +1526,7 @@ def patch_PDFDate():
     '''Patch reportlab.pdfdoc.PDFDate so the invariant dates work correctly'''
     from reportlab.pdfbase import pdfdoc
     import reportlab
-    class PDFDate:
+    class PDFDate(object):
         __PDFObject__ = True
         # gmt offset now suppported
         def __init__(self, invariant=True, dateFormatter=None):

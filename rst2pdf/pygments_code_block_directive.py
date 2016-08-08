@@ -26,6 +26,17 @@
 # ::
 
 """Define and register a code-block directive using pygments"""
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import str
+from builtins import range
+from builtins import *
+from builtins import object
 
 
 # Requirements
@@ -105,7 +116,7 @@ class DocutilsInterface(object):
         """join subsequent tokens of same token-type
         """
         tokens = iter(tokens)
-        (lasttype, lastval) = tokens.next()
+        (lasttype, lastval) = next(tokens)
         for ttype, value in tokens:
             if ttype is lasttype:
                 lastval += value
@@ -245,7 +256,7 @@ def code_block_directive(name, arguments, options, content, lineno,
             # The first piece, pass as-is
             code_block += nodes.Text(values[0], values[0])
             # On the second and later pieces, insert \n and linenos
-            linenos = range(lineno, lineno + len(values))
+            linenos = list(range(lineno, lineno + len(values)))
             for chunk, ln in zip(values, linenos)[1:]:
                 if ln <= total_lines:
                     code_block += nodes.inline(fstr % ln, fstr % ln, classes=['linenumber'])

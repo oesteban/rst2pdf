@@ -1,3 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import object
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'searchwidget.ui'
@@ -44,7 +52,7 @@ class Ui_Form(object):
         self.next.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
         self.next.setAutoRaise(True)
         self.next.setObjectName("next")
-        self.horizontalLayout.addWidget(self.next)
+        self.horizontalLayout.addWidget(self.__next__)
         self.matchCase = QtGui.QCheckBox(Form)
         self.matchCase.setObjectName("matchCase")
         self.horizontalLayout.addWidget(self.matchCase)

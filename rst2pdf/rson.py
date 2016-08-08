@@ -21,6 +21,13 @@ Additional documentation available at:
 http://code.google.com/p/rson/
 '''
 from __future__ import absolute_import, division, print_function, unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import next
+from past.builtins import basestring
+from builtins import *
+from builtins import object
 from six import string_types
 
 __version__ = '0.08'
@@ -56,8 +63,8 @@ import bisect
 import re
 import sys
 if sys.version_info[0] > 2:
-    unicode = str
-    unichr = chr
+    str = str
+    chr = chr
 
 
 class RSONDecodeError(ValueError):
@@ -136,7 +143,7 @@ class Tokenizer(list):
     splitter = re.compile(pattern).split
 
     @classmethod
-    def factory(cls, len=len, iter=iter, unicode=unicode, isinstance=isinstance):
+    def factory(cls, len=len, iter=iter, str=str, isinstance=isinstance):
         splitter = cls.splitter
         delimiterset = set(cls.delimiterset) | set('"')
 
@@ -145,7 +152,7 @@ class Tokenizer(list):
             self.client = client
 
             # Deal with 8 bit bytes for now
-            if isinstance(source, unicode) and sys.version_info[0] < 3:
+            if isinstance(source, str) and sys.version_info[0] < 3:
                 source = source.encode('utf-8')
 
             # Convert MS-DOS or Mac line endings to the one true way
@@ -244,7 +251,7 @@ def make_hashable(what):
         return what
     except TypeError:
         if isinstance(what, dict):
-            return tuple(sorted(make_hashable(x) for x in what.iteritems()))
+            return tuple(sorted(make_hashable(x) for x in what.items()))
         return tuple(make_hashable(x) for x in what)
 
 class BaseObjects(object):
@@ -346,7 +353,7 @@ class Dispatcher(object):
             if not kw:
                 return default_loads(s)
 
-            key = tuple(sorted(kw.iteritems()))
+            key = tuple(sorted(kw.items()))
             func = cached(key)
             if func is None:
                 # Begin some real ugliness here -- just modify our instance to
@@ -364,13 +371,13 @@ class QuotedToken(object):
     ''' Subclass or replace this if you don't like quoted string handling
     '''
 
-    parse_encoded_chr = unichr
+    parse_encoded_chr = chr
     if sys.version_info[0] < 3:
         parse_quoted_str = staticmethod(
-            lambda token, s, unicode=unicode: unicode(s, 'utf-8'))
+            lambda token, s, str=str: str(s, 'utf-8'))
     else:
         parse_quoted_str = staticmethod(
-            lambda token, s, unicode=None: s)
+            lambda token, s, str=None: s)
 
     parse_join_str = u''.join
     cachestrings = False
@@ -414,7 +421,7 @@ class QuotedToken(object):
                 result = [result]
                 append = result.append
                 s = iter(s)
-                next = s.next
+                next = s.__next__
                 next()
                 for special in s:
                     nonmatch = next()
@@ -500,10 +507,10 @@ class UnquotedToken(object):
     parse_float = float
     if sys.version_info[0] < 3:
         parse_unquoted_str = staticmethod(
-            lambda token, unicode=unicode: unicode(token[2], 'utf-8'))
+            lambda token, str=str: str(token[2], 'utf-8'))
     else:
         parse_unquoted_str = staticmethod(
-            lambda token, unicode=None: token[2])
+            lambda token, str=None: token[2])
 
     special_strings = dict(true = True, false = False, null = None)
 
@@ -908,7 +915,7 @@ class RsonParser(object):
             tokens = tokenizer(source, None)
             tokens.stringcache = {}.setdefault
             tokens.client_info = client_info
-            next = tokens.next
+            next = tokens.__next__
             value, token = parse_recurse([next()], next, tokens)
             if token[1] != '@':
                 error('Unexpected additional data', token)

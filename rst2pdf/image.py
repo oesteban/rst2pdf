@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
+from past.utils import old_div
 import os
 from os.path import abspath, dirname, expanduser, join
 import sys
@@ -77,7 +86,7 @@ class MyImage (Flowable):
 
         if filename.split("://")[0].lower() in ('http','ftp','https'):
             try:
-                filename2, _ = urllib.urlretrieve(filename)
+                filename2, _ = urllib.request.urlretrieve(filename)
                 if filename != filename2:
                     client.to_unlink.append(filename2)
                     filename = filename2
@@ -96,7 +105,7 @@ class MyImage (Flowable):
         else:
             self.image=self._backend(self.filename, width, height,
                 kind, mask, lazy, srcinfo)
-        self.__ratio=float(self.image.imageWidth)/self.image.imageHeight
+        self.__ratio=old_div(float(self.image.imageWidth),self.image.imageHeight)
         self.__wrappedonce=False
         self.target = target
 
@@ -160,7 +169,7 @@ class MyImage (Flowable):
             gfx = LazyImports.gfx
             try:
                 # Need to convert the DPI to % where 100% is 72DPI
-                gfx.setparameter( "zoom", str(client.styles.def_dpi/.72))
+                gfx.setparameter( "zoom", str(old_div(client.styles.def_dpi,.72)))
                 if extension == 'pdf':
                     doc = gfx.open("pdf", filename)
                 elif extension == 'swf':
@@ -282,7 +291,7 @@ class MyImage (Flowable):
         if uri.split("://")[0].lower() not in ('http','ftp','https'):
             uri = os.path.join(client.basedir,uri)
         else:
-            uri, _ = urllib.urlretrieve(uri)
+            uri, _ = urllib.request.urlretrieve(uri)
             client.to_unlink.append(uri)
 
         srcinfo = client, uri
@@ -292,7 +301,7 @@ class MyImage (Flowable):
         if not os.path.isfile(imgname):
             imgname = missing
 
-        scale = float(node.get('scale', 100))/100
+        scale = old_div(float(node.get('scale', 100)),100)
         size_known = False
 
         # Figuring out the size to display of an image is ... annoying.
@@ -420,7 +429,7 @@ class MyImage (Flowable):
 
         # And now we have this probably completely bogus size!
         log.info("Image %s size calculated:  %fcm by %fcm [%s]",
-            imgname, w/cm, h/cm, nodeid(node))
+            imgname, old_div(w,cm), old_div(h,cm), nodeid(node))
 
         return w, h, kind
 
@@ -442,9 +451,9 @@ class MyImage (Flowable):
                 log.warning('Scaling image as % of container with w unset.'
                 'This should not happen, setting to 100')
                 w = 100
-            scale=w/100.
+            scale=old_div(w,100.)
             w = availWidth*scale
-            h = w/self.__ratio
+            h = old_div(w,self.__ratio)
             self.image.drawWidth, self.image.drawHeight = w, h
             return w, h
         else:
@@ -466,14 +475,14 @@ class MyImage (Flowable):
                 log.warning('image %s is too wide for the frame, rescaling'%\
                             self.filename)
                 self.image.drawWidth = availWidth
-                self.image.drawHeight = availWidth / self.__ratio
+                self.image.drawHeight = old_div(availWidth, self.__ratio)
             return self.image.wrap(availWidth, availHeight)
 
     def drawOn(self, canv, x, y, _sW=0):
         if self.target:
             offset = 0
             if self.image.hAlign == 'CENTER':
-                offset = _sW / 2.
+                offset = old_div(_sW, 2.)
             elif self.image.hAlign == 'RIGHT':
                 offset = _sW
             canv.linkURL(self.target,

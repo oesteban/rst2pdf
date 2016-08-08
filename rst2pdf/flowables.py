@@ -4,6 +4,19 @@
 #$Date$
 #$Revision$
 
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import map
+from builtins import hex
+from builtins import str
+from builtins import range
+from builtins import *
+from past.utils import old_div
 __docformat__ = 'reStructuredText'
 
 from copy import copy
@@ -225,7 +238,7 @@ class DelayedTable(Table):
             kwargs['total']=w
             return styles.adjustUnits(*args, **kwargs)
         #adjust=functools.partial(styles.adjustUnits, total=w)
-        self.colWidths=map(adjust, self._colWidths)
+        self.colWidths=list(map(adjust, self._colWidths))
         #colWidths = [_w * _tw for _w in self.colWidths]
         self.t = Table(self.data, colWidths=self.colWidths,
             style=self.style, repeatRows=self.repeatrows,
@@ -250,7 +263,7 @@ class DelayedTable(Table):
             hex(id(self)), self._frameName(),
             getattr(self, 'name', '')
                 and (' name="%s"' % getattr(self, 'name', '')) or '',
-                unicode(self.data[0])[:180])
+                str(self.data[0])[:180])
 
 def tablepadding(padding):
     if not isinstance(padding,(list,tuple)):
@@ -277,7 +290,7 @@ class SplitTable(DelayedTable):
             hex(id(self)), self._frameName(),
             getattr(self, 'name', '')
                 and (' name="%s"' % getattr(self, 'name', '')) or '',
-                unicode(self.data[0][1])[:180])
+                str(self.data[0][1])[:180])
 
     def split(self,w,h):
         _w,_h=self.wrap(w, h)
@@ -714,7 +727,7 @@ class BoundByWidth(Flowable):
             hex(id(self)), self._frameName(),
             getattr(self, 'name', '')
                 and (' name="%s"' % getattr(self, 'name', '')) or '',
-                unicode([c.identity() for c in self.content])[:80])
+                str([c.identity() for c in self.content])[:80])
 
     def wrap(self, availWidth, availHeight):
         """If we need more width than we have, complain, keep a scale"""
@@ -731,8 +744,8 @@ class BoundByWidth(Flowable):
                 log.warning("BoundByWidth too wide to fit in frame (%s > %s): %s",
                     self.width,maxWidth,self.identity())
             if self.mode == 'shrink' and not self.scale:
-                self.scale = (maxWidth + self.pad[1]+self.pad[3])/\
-                    (self.width + self.pad[1]+self.pad[3])
+                self.scale = old_div((maxWidth + self.pad[1]+self.pad[3]),\
+                    (self.width + self.pad[1]+self.pad[3]))
         else:
             self.scale = 1.0
         self.height *= self.scale
@@ -767,7 +780,7 @@ class BoundByWidth(Flowable):
         aW = scale*(aW + _sW)
         if content is None:
             content = self.content
-        y += (self.height + self.pad[2])/scale
+        y += old_div((self.height + self.pad[2]),scale)
         x += self.pad[3]
         for c in content:
             w, h = c.wrapOn(canv, aW, 0xfffffff)
@@ -806,7 +819,7 @@ class BoxedContainer(BoundByWidth):
         self.mode = mode
 
     def identity(self, maxLen=None):
-        return unicode([u"BoxedContainer containing: ",
+        return str([u"BoxedContainer containing: ",
             [c.identity() for c in self.content]])[:80]
 
     def draw(self):
@@ -911,7 +924,7 @@ if reportlab.Version == '2.1':
         xs.link = None
 
     # Look behind you! A three-headed monkey!
-    pla_para._do_post_text.func_code = _do_post_text.func_code
+    pla_para._do_post_text.__code__ = _do_post_text.__code__
     ############### End of the ugly
 
 class MyTableOfContents(TableOfContents):
@@ -996,8 +1009,8 @@ class MyTableOfContents(TableOfContents):
             if label:
                 pre = u'<a href="%s" color="%s">' % (label, self.linkColor)
                 post = u'</a>'
-                if not isinstance(text, unicode):
-                    text = unicode(text, 'utf-8')
+                if not isinstance(text, str):
+                    text = str(text, 'utf-8')
                 text = pre + text + post
             else:
                 pre = ''
@@ -1033,7 +1046,7 @@ class MyTableOfContents(TableOfContents):
                 return False
 
             log.info('TOC entries that moved in this pass:')
-            for i in xrange(len(self._entries)):
+            for i in range(len(self._entries)):
                 if self._entries[i] != self._lastEntries[i]:
                     log.info(str(self._entries[i]))
                     log.info(str(self._lastEntries[i]))

@@ -11,12 +11,20 @@ the vectorpdf code to process the PDF.
     The initial version is a proof of concept; uses subprocess in a naive way,
     and doesn't check return from inkscape for errors.
 '''
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
 
 import sys, os, tempfile, subprocess
 from weakref import WeakKeyDictionary
 from rst2pdf.log import log
 
-from vectorpdf_r2p import VectorPdf
+from .vectorpdf_r2p import VectorPdf
 import rst2pdf.image
 
 

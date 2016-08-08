@@ -33,6 +33,14 @@ If no NodeHandler subclass has been created to handle that particular
 type of docutils node, then default processing will occur and a warning
 will be logged.
 '''
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import object
 
 import types
 import inspect
@@ -40,6 +48,7 @@ import docutils.nodes
 from rst2pdf.log import log, nodeid
 from rst2pdf.smartypants import smartyPants
 from rst2pdf.flowables import BoundByWidth, TocEntry
+from future.utils import with_metaclass
 
 
 class MetaHelper(type):
@@ -101,12 +110,11 @@ class MetaHelper(type):
             cls._classinit()
 
 
-class NodeHandler(object):
+class NodeHandler(with_metaclass(MetaHelper, object)):
     ''' NodeHandler classes are used to dispatch
        to the correct class to handle some node class
        type, via a dispatchdict in the main class.
     '''
-    __metaclass__ = MetaHelper
     dispatchdict = None
 
     @classmethod
@@ -209,7 +217,7 @@ class NodeHandler(object):
         try:
             if node['classes'] and node['classes'][0]:
                 # FIXME: Supports only one class, sorry ;-)
-                if client.styles.StyleSheet.has_key(node['classes'][0]):
+                if node['classes'][0] in client.styles.StyleSheet:
                     style = client.styles[node['classes'][0]]
                 else:
                     log.info("Unknown class %s, ignoring. [%s]",

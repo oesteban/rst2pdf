@@ -17,17 +17,26 @@ which is kept separate from the regular one.
 When the SphinxHandler class is instantiated, the two dictionaries
 are combined into the instantiated object.
 '''
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
+from past.utils import old_div
 
 from copy import copy
 
-from log import nodeid, log
-from flowables import  MySpacer, MyIndenter, Reference, DelayedTable, Table
-from image import MyImage, VectorPdf
+from .log import nodeid, log
+from .flowables import  MySpacer, MyIndenter, Reference, DelayedTable, Table
+from .image import MyImage, VectorPdf
 
-from opt_imports import Paragraph, sphinx
+from .opt_imports import Paragraph, sphinx
 
-from nodehandlers import NodeHandler, FontHandler, HandleEmphasis
-import math_flowable
+from .nodehandlers import NodeHandler, FontHandler, HandleEmphasis
+from . import math_flowable
 from reportlab.platypus import Paragraph, TableStyle
 import sphinx
 import docutils
@@ -45,7 +54,7 @@ class SphinxHandler(NodeHandler):
             sphinx-specific handlers.
         '''
         mydict = {}
-        for key, value in self._baseclass.dispatchdict.iteritems():
+        for key, value in self._baseclass.dispatchdict.items():
             value = copy(value)
             value.sphinxmode = True
             mydict[key] = value
@@ -168,7 +177,7 @@ class HandleHList(SphinxHandler, sphinx.addnodes.hlist):
 
         cells = [[ client.gather_elements(child, style) for child in node.children]]
         t_style=TableStyle(client.styles['hlist'].commands)
-        cw=100./len(node.children)
+        cw=old_div(100.,len(node.children))
         return [ DelayedTable( cells,
             colWidths=["%s%%"%cw,]*len(cells),
             style=t_style

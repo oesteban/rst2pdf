@@ -1,3 +1,13 @@
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import *
+from past.utils import old_div
+from builtins import object
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2007-2008 by Igor Novikov
@@ -49,7 +59,7 @@ def make_pdf_path(pdfpath, paths):
 			pdfpath.close()
 	return pdfpath
 
-class PDFDevice:
+class PDFDevice(object):
 
 	has_axial_gradient = 0
 	has_radial_gradient = 0
@@ -63,7 +73,7 @@ class PDFDevice:
 		self.pdf.saveState()
 
 	def Concat(self, trafo):
-		apply(self.pdf.transform, trafo.coeff())
+		self.pdf.transform(*trafo.coeff())
 
 	def Translate(self, x, y = None):
 		if y is None:
@@ -122,7 +132,7 @@ class PDFDevice:
 
 	def FillPolygon(self, pts):
 		path = self.pdf.beginPath()
-		apply(path.moveTo, pts[0])
+		path.moveTo(*pts[0])
 		for x, y in pts:
 			path.lineTo(x, y)
 		path.close()
@@ -136,7 +146,7 @@ class PDFDevice:
 
 
 
-class PDFGenSaver:
+class PDFGenSaver(object):
 
 	def __init__(self, file, filename, document, options):
 		self.file = file
@@ -153,14 +163,14 @@ class PDFGenSaver:
 		#
 		# The code here assumes that the canvas is already setup
 		# properly.
-		if options.has_key("pdfgen_canvas"):
+		if "pdfgen_canvas" in options:
 			self.pdf = options["pdfgen_canvas"]
 		else:
 			self.pdf = reportlab.pdfgen.canvas.Canvas(file)
 			self.pdf.setPageSize(document.PageSize())
 
 	def close(self):
-		if not self.options.has_key("pdfgen_canvas"):
+		if "pdfgen_canvas" not in self.options:
 			self.pdf.save()
 
 	def set_properties(self, properties, bounding_rect = None):
@@ -198,7 +208,7 @@ class PDFGenSaver:
 	def axial_gradient(self, properties, rect):
 		pattern = properties.fill_pattern
 		vx, vy = pattern.Direction()
-		angle = atan2(vy, vx) - pi / 2
+		angle = atan2(vy, vx) - old_div(pi, 2)
 		center = rect.center()
 		rot = Rotation(angle, center)
 		left, bottom, right, top = rot(rect)
@@ -208,8 +218,8 @@ class PDFGenSaver:
 		_sketch.fill_axial_gradient(image.im, pattern.Gradient().Colors(), 
 									0, border, 0, 200 - border)
 		self.pdf.saveState()
-		apply(self.pdf.transform, trafo.coeff())
-		self.pdf.drawInlineImage(image, (left - right) / 2, (bottom - top) / 2, 
+		self.pdf.transform(*trafo.coeff())
+		self.pdf.drawInlineImage(image, old_div((left - right), 2), old_div((bottom - top), 2), 
 								 right - left, top - bottom)
 		self.pdf.restoreState()
 
@@ -286,7 +296,7 @@ class PDFGenSaver:
 
 	def raster_image(self, object):
 		self.pdf.saveState()
-		apply(self.pdf.transform, object.Trafo().coeff())
+		self.pdf.transform(*object.Trafo().coeff())
 		self.pdf.drawInlineImage(object.Data().Image(), 0, 0)
 		self.pdf.restoreState()
 
@@ -305,7 +315,7 @@ class PDFGenSaver:
 		elif clip:
 			pdftext.setTextRenderMode(4)
 		pdftext.setFont(fontname, properties.font_size)
-		apply(pdftext.setTextTransform, object.FullTrafo().coeff())
+		pdftext.setTextTransform(*object.FullTrafo().coeff())
 		pdftext.textOut(object.Text())
 		self.pdf.drawText(pdftext)
 		if active_fill:
@@ -331,7 +341,7 @@ class PDFGenSaver:
 		trafos = object.CharacterTransformations()
 		text = object.Text()
 		for i in range(len(trafos)):
-			apply(pdftext.setTextTransform, trafos[i].coeff())
+			pdftext.setTextTransform(*trafos[i].coeff())
 			pdftext.textOut(text[i])
 		self.pdf.drawText(pdftext)
 		if active_fill:
@@ -344,7 +354,7 @@ class PDFGenSaver:
 		masters=self.document.getMasterLayers()
 		count=0
 		pagenum=len(self.document.pages)
-		interval=int(97/pagenum)
+		interval=int(old_div(97,pagenum))
 		for page in self.document.pages:
 			count+=1
 			app.updateInfo(inf2=_('Composing page %u of %u')%(count,pagenum),inf3=count*interval)

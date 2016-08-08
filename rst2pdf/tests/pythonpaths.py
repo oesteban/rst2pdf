@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import os
 import sys
 
@@ -14,7 +21,7 @@ def setpythonpaths(execfn, rootdir=None):
     '''
     pathlen = len(sys.path)
     f = open(execfn, 'rb')
-    exec f in {'__name__':'testing'}
+    exec(f, {'__name__':'testing'})
     f.close()
     newpaths = sys.path[:len(sys.path)-pathlen]
     ppath = os.environ.get('PYTHONPATH')

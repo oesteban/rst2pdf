@@ -6,8 +6,8 @@ import os
 from reportlab.platypus import Flowable, Paragraph
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
 
-from log import log
-from opt_imports import LazyImports
+from rst2pdf.log import log
+from rst2pdf.opt_imports import LazyImports
 
 class SVGImage(Flowable):
 

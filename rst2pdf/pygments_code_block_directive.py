@@ -43,7 +43,7 @@ try:
 except ImportError:
     pass
 
-from log import log
+from rst2pdf.log import log
 
 
 # Customisation
@@ -88,7 +88,7 @@ class DocutilsInterface(object):
     def lex(self):
         # Get lexer for language (use text as fallback)
         try:
-            if self.language and unicode(self.language).lower() <> 'none':
+            if self.language and self.language.lower() != 'none':
                 lexer = get_lexer_by_name(self.language.lower(),
                                         **self.custom_args
                                         )
@@ -266,17 +266,17 @@ def code_block_directive(name, arguments, options, content, lineno,
 #
 # Move to separated module??
 
-def zero_or_positive_int(argument): 
-    """ 
-    Converts a string into python positive integer including zero. 
-    None is a special case; it is regarded as zero. 
-    """ 
-    if argument is None: 
-        return 0 
-    elif argument == '0': 
-        return 0 
-    else: 
-        return directives.positive_int(argument) 
+def zero_or_positive_int(argument):
+    """
+    Converts a string into python positive integer including zero.
+    None is a special case; it is regarded as zero.
+    """
+    if argument is None:
+        return 0
+    elif argument == '0':
+        return 0
+    else:
+        return directives.positive_int(argument)
 
 
 def string_list(argument):

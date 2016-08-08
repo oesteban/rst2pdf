@@ -36,10 +36,10 @@ will be logged.
 
 import types
 import inspect
-from log import log, nodeid
-from smartypants import smartyPants
 import docutils.nodes
-from flowables import BoundByWidth, TocEntry
+from rst2pdf.log import log, nodeid
+from rst2pdf.smartypants import smartyPants
+from rst2pdf.flowables import BoundByWidth, TocEntry
 
 
 class MetaHelper(type):
@@ -107,6 +107,7 @@ class NodeHandler(object):
        type, via a dispatchdict in the main class.
     '''
     __metaclass__ = MetaHelper
+    dispatchdict = None
 
     @classmethod
     def _classpreinit(baseclass, clstype, name, bases, clsdict):

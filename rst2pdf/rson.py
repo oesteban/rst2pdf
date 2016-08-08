@@ -20,6 +20,8 @@ Additional documentation available at:
 
 http://code.google.com/p/rson/
 '''
+from __future__ import absolute_import, division, print_function, unicode_literals
+from six import string_types
 
 __version__ = '0.08'
 
@@ -53,6 +55,10 @@ Copyright (c) 2010, Patrick Maupin.  All rights reserved.
 import bisect
 import re
 import sys
+if sys.version_info[0] > 2:
+    unicode = str
+    unichr = chr
+
 
 class RSONDecodeError(ValueError):
     pass
@@ -139,7 +145,7 @@ class Tokenizer(list):
             self.client = client
 
             # Deal with 8 bit bytes for now
-            if isinstance(source, unicode):
+            if isinstance(source, unicode) and sys.version_info[0] < 3:
                 source = source.encode('utf-8')
 
             # Convert MS-DOS or Mac line endings to the one true way
@@ -153,25 +159,24 @@ class Tokenizer(list):
 
             # Set up to iterate over the source and add to the destination list
             sourceiter = iter(sourcelist)
-            next = sourceiter.next
-            offset -= len(next())
+            offset -= len(next(sourceiter))
 
             # Strip comment from first line
             if len(sourcelist) > 1 and sourcelist[1].startswith('#'):
                 i = 1
                 while len(sourcelist) > i and not sourcelist[i].startswith('\n'):
                     i += 1
-                    offset -= len(next())
+                    offset -= len(next(sourceiter))
 
 
             # Preallocate the list
             self.append(None)
-            self *= len(sourcelist) / 2 + 1
+            self *= len(sourcelist) // 2 + 1
             index = 0
 
             # Create all the tokens
             for token in sourceiter:
-                whitespace = next()
+                whitespace = next(sourceiter)
                 t0 = token[0]
                 if t0 not in delimiterset:
                     if t0 == '\n':
@@ -266,7 +271,7 @@ class BaseObjects(object):
         ''' By default, RSON objects are dictionaries that
             allow attribute access to their existing contents.
         '''
-        
+
         def __getattr__(self, key):
             return self[key]
         def __setattr__(self, key, value):
@@ -359,9 +364,14 @@ class QuotedToken(object):
     ''' Subclass or replace this if you don't like quoted string handling
     '''
 
-    parse_quoted_str = staticmethod(
-          lambda token, s, unicode=unicode: unicode(s, 'utf-8'))
     parse_encoded_chr = unichr
+    if sys.version_info[0] < 3:
+        parse_quoted_str = staticmethod(
+            lambda token, s, unicode=unicode: unicode(s, 'utf-8'))
+    else:
+        parse_quoted_str = staticmethod(
+            lambda token, s, unicode=None: s)
+
     parse_join_str = u''.join
     cachestrings = False
 
@@ -488,8 +498,12 @@ class UnquotedToken(object):
     parse_int = staticmethod(
         lambda s: int(s.replace('_', ''), 0))
     parse_float = float
-    parse_unquoted_str = staticmethod(
-        lambda token, unicode=unicode: unicode(token[2], 'utf-8'))
+    if sys.version_info[0] < 3:
+        parse_unquoted_str = staticmethod(
+            lambda token, unicode=unicode: unicode(token[2], 'utf-8'))
+    else:
+        parse_unquoted_str = staticmethod(
+            lambda token, unicode=None: token[2])
 
     special_strings = dict(true = True, false = False, null = None)
 
@@ -635,8 +649,8 @@ class RsonParser(object):
     def client_info(self, parse_locals):
         pass
 
-    def parser_factory(self, len=len, type=type, isinstance=isinstance, list=list, basestring=basestring):
-
+    def parser_factory(self, len=len, type=type, isinstance=isinstance, list=list,
+                       basestring=string_types):
         Tokenizer = self.Tokenizer
         tokenizer = Tokenizer.factory()
         error = Tokenizer.error
@@ -703,7 +717,7 @@ class RsonParser(object):
                         error('Unexpected trailing comma', token)
                     break
                 key = json_value_dispatch(t0, bad_dict_key)(token, next)
-                if disallow_nonstring_keys and not isinstance(key, basestring):
+                if disallow_nonstring_keys and not isinstance(key, string_types):
                     error('Non-string key %s not supported' % repr(key), token)
                 token = next()
                 t0 = token[1]
@@ -844,7 +858,7 @@ class RsonParser(object):
                 error("rson client's object handlers do not support chained objects", token)
             if disallow_nonstring_keys:
                 for key in entry[:-1]:
-                    if not isinstance(key, basestring):
+                    if not isinstance(key, string_types):
                         error('Non-string key %s not supported' % repr(key), token)
             mydict.append(entry)
             return token

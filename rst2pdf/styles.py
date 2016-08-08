@@ -26,11 +26,9 @@ import reportlab.lib.pagesizes as pagesizes
 import reportlab.rl_config
 
 from rst2pdf.rson import loads as rson_loads
-
-import findfonts
-from log import log
-
-from opt_imports import ParagraphStyle, wordaxe, wordaxe_version
+from rst2pdf import findfonts
+from rst2pdf.log import log
+from rst2pdf.opt_imports import ParagraphStyle, wordaxe, wordaxe_version
 
 HAS_WORDAXE = wordaxe is not None
 
@@ -48,7 +46,7 @@ class StyleSheet(object):
         '''
         styles = data.get('styles', {})
         try:
-            stylenames = styles.keys()
+            stylenames = list(styles.keys())
         except AttributeError:
             for style in styles:
                 yield style
@@ -924,11 +922,11 @@ def validateCommands(commands):
             continue
 
         # See if start and stop are the right types
-        if type(command[1]) not in (ListType,TupleType):
+        if not isinstance(command[1], (list, tuple)):
             log.error('Start cell in table command should be list or tuple, got %s [%s]',type(command[1]),command[1])
             flag=True
 
-        if type(command[2]) not in (ListType,TupleType):
+        if not isinstance(command[2], (list, tuple)):
             log.error('Stop cell in table command should be list or tuple, got %s [%s]',type(command[1]),command[1])
             flag=True
 

@@ -7,7 +7,7 @@ from docutils.nodes import General, Inline, Element
 from docutils import utils
 from docutils.parsers.rst import roles
 
-import basenodehandler, math_flowable
+from rst2pdf import basenodehandler, math_flowable
 
 if 'Directive' in rst.__dict__:
 

@@ -38,6 +38,7 @@ long_description = (
 install_requires = [
         'setuptools',
         'docutils',
+        'future',
         'reportlab>=2.4',
         'Pygments',
         'pdfrw',

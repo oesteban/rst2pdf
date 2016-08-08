@@ -44,26 +44,26 @@ import tempfile
 import re
 from copy import copy
 
-from basenodehandler import NodeHandler
-
 import docutils.nodes
-from oddeven_directive import OddEvenNode
 import reportlab
 
-from aafigure_directive import Aanode
-
-from log import log, nodeid
-from utils import log, parseRaw, parseHTML
 from reportlab.platypus import Paragraph, TableStyle
 from reportlab.lib.units import cm
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
-from flowables import Table, DelayedTable, SplitTable, Heading, \
+
+from rst2pdf.basenodehandler import NodeHandler
+from rst2pdf.oddeven_directive import OddEvenNode
+from rst2pdf.aafigure_directive import Aanode
+from rst2pdf.log import log, nodeid
+from rst2pdf.utils import log, parseRaw, parseHTML
+
+from rst2pdf.flowables import Table, DelayedTable, SplitTable, Heading, \
               MyIndenter, MyTableOfContents, MySpacer, \
               Separation, BoxedContainer, BoundByWidth, \
               MyPageBreak, Reference, tablepadding, OddEven, \
               XPreformatted
 
-from opt_imports import wordaxe, Paragraph, ParagraphStyle
+from rst2pdf.opt_imports import wordaxe, Paragraph, ParagraphStyle
 
 
 class TocBuilderVisitor(docutils.nodes.SparseNodeVisitor):
@@ -697,7 +697,7 @@ class HandleLine(NodeHandler, docutils.nodes.line):
     def gather_elements(self, client, node, style):
         # line nodes have no classes, they have to inherit from the outermost lineblock (sigh)
         # For more info see Issue 471 and its test case.
-        
+
         parent = node
         while isinstance(parent.parent, (docutils.nodes.line, docutils.nodes.line_block)):
             parent=parent.parent

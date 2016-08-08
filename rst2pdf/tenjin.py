@@ -80,8 +80,8 @@ def _write_file_with_lock(filename, content):
 
 def _create_module(module_name):
     """ex. mod = _create_module('tenjin.util')"""
-    import new
-    mod = new.module(module_name.split('.')[-1])
+    from types import ModuleType
+    mod = ModuleType(module_name.split('.')[-1])
     sys.modules[module_name] = mod
     return mod
 
@@ -759,7 +759,7 @@ class Template(object):
         locals['_buf'] = _buf
         if not self.bytecode:
             self.compile()
-        exec self.bytecode in globals, locals
+        exec(self.bytecode in globals, locals)
         if bufarg is None:
             s = ''.join(_buf)
             #if self.encoding:

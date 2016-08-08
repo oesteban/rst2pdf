@@ -31,8 +31,8 @@ from docutils.parsers.rst import directives
 from docutils.parsers.rst import nodes
 from reportlab.graphics import renderPDF
 from docutils.parsers import rst
-from opt_imports import aafigure
-from log import log
+from rst2pdf.opt_imports import aafigure
+from rst2pdf.log import log
 
 WARNED=False
 
@@ -56,7 +56,7 @@ class Aanode(Element):
             aafigure.pdf.PDFOutputVisitor,
             options=options)
         return renderPDF.GraphicsFlowable(visitor.drawing)
-        
+
 
 class Aafig(rst.Directive):
     """

@@ -6,14 +6,13 @@ import sys
 import tempfile
 from copy import copy
 from reportlab.platypus.flowables import Image, Flowable
-from log import log, nodeid
 from reportlab.lib.units import *
 import glob
-import urllib
+from future.moves import urllib
 
-from opt_imports import LazyImports
-
-from svgimage import SVGImage
+from rst2pdf.log import log, nodeid
+from rst2pdf.opt_imports import LazyImports
+from rst2pdf.svgimage import SVGImage
 
 # This assignment could be overridden by an extension module
 VectorPdf = None
@@ -480,7 +479,7 @@ class MyImage (Flowable):
             canv.linkURL(self.target,
                     (
                     x + offset, y,
-                    x + offset + self.image.drawWidth, 
+                    x + offset + self.image.drawWidth,
                     y + self.image.drawHeight),
                     relative = True,
                     #thickness = 3,

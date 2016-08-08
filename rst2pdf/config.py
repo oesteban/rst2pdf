@@ -3,8 +3,13 @@
 """Singleton config object"""
 
 
-import ConfigParser
 import os
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
+
+
 from rst2pdf.rson import loads
 
 cfdir = os.path.join(os.path.expanduser('~'), '.rst2pdf')
@@ -35,5 +40,5 @@ def parseConfig(extracf=None):
         cflist.append(extracf)
     conf = ConfigParser.SafeConfigParser()
     conf.read(cflist)
-    
+
 parseConfig()

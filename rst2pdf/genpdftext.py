@@ -8,15 +8,15 @@
 
 import os
 from xml.sax.saxutils import escape
-from log import log, nodeid
-from basenodehandler import NodeHandler
 import docutils.nodes
-from urlparse import urljoin, urlparse
+from future.moves.urllib.parse import urlparse, urljoin
 from reportlab.lib.units import cm
-from opt_imports import Paragraph
 
-from image import MyImage, missing
-from flowables import MySpacer
+from rst2pdf.log import log, nodeid
+from rst2pdf.basenodehandler import NodeHandler
+from rst2pdf.opt_imports import Paragraph
+from rst2pdf.image import MyImage, missing
+from rst2pdf.flowables import MySpacer
 
 class FontHandler(NodeHandler):
     def get_pre_post(self, client, node, replaceEnt):
@@ -45,7 +45,7 @@ class HandleEmphasis(NodeHandler, docutils.nodes.emphasis):
 
 class HandleLiteral(NodeHandler, docutils.nodes.literal):
     def get_pre_post(self, client, node, replaceEnt):
-        
+
         if node['classes']:
             pre = client.styleToFont(node['classes'][0])
         else:
@@ -61,7 +61,7 @@ class HandleLiteral(NodeHandler, docutils.nodes.literal):
         text = escape(node.astext())
         text = text.replace(' ', '&nbsp;')
         return text
-        
+
 class HandleSuper(NodeHandler, docutils.nodes.superscript):
     pre = '<super>'
     post = "</super>"
@@ -165,7 +165,7 @@ class HandleImage(NodeHandler, docutils.nodes.image):
         node.elements[0].image.hAlign = alignment
         node.elements[0].spaceBefore = style.spaceBefore
         node.elements[0].spaceAfter = style.spaceAfter
-        
+
         # Image flowables don't support valign (makes no sense for them?)
         # elif alignment in ('TOP','MIDDLE','BOTTOM'):
         #    i.vAlign = alignment

@@ -38,27 +38,31 @@
 #
 #####################################################################################
 
+from __future__ import absolute_import, division, print_function
 
 __docformat__ = 'reStructuredText'
 
+
 # Import Psyco if available
-from opt_imports import psyco
+from .opt_imports import psyco
 psyco.full()
+
 
 import sys
 import os
 import tempfile
 import re
 import string
-import config
 import logging
-from cStringIO import StringIO
+from io import StringIO
 from os.path import abspath, dirname, expanduser, join
-from urlparse import urljoin, urlparse, urlunparse
+from future.moves.urllib.parse import urljoin, urlparse, urlunparse
 from copy import copy, deepcopy
 from optparse import OptionParser
 from pprint import pprint
 from xml.sax.saxutils import unescape, escape
+
+import rst2pdf.config
 
 import docutils.readers.doctree
 import docutils.core
@@ -221,7 +225,7 @@ class RstToPdf(object):
             # These rst2pdf extensions conflict with sphinx
             directives.register_directive('code-block', pygments_code_block_directive.code_block_directive)
             directives.register_directive('code', pygments_code_block_directive.code_block_directive)
-            import math_directive
+            from rst2pdf import math_directive
             self.gen_pdftext, self.gen_elements = nodehandlers(self)
 
         self.sphinx = sphinx
@@ -1356,7 +1360,7 @@ def main(_args=None):
 
     if options.version:
         from rst2pdf import version
-        print version
+        print(version)
         sys.exit(0)
 
     if options.quiet:
@@ -1374,7 +1378,7 @@ def main(_args=None):
             PATH = abspath(dirname(sys.executable))
         else:
             PATH = abspath(dirname(__file__))
-        print open(join(PATH, 'styles', 'styles.style')).read()
+        print(open(join(PATH, 'styles', 'styles.style')).read())
         sys.exit(0)
 
     filename = False
@@ -1519,7 +1523,7 @@ def patch_PDFDate():
         __PDFObject__ = True
         # gmt offset now suppported
         def __init__(self, invariant=True, dateFormatter=None):
-            now = (2000,01,01,00,00,00,0)
+            now = (2000, 1, 1, 0, 0, 0, 0)
             self.date = now[:6]
             self.dateFormatter = dateFormatter
 

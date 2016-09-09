@@ -10,4 +10,4 @@ test:
     - nosetests -i regulartest -i sphinxtest --with-xunit --xunit-file=${CIRCLE_TEST_REPORTS}/nose/${CIRCLE_PROJECT_REPONAME}.xml
 general:
   artifacts:
-    - "~/rst2pdf/rst2pdf/tests/output/
+    - "~/rst2pdf/rst2pdf/tests/output/"
